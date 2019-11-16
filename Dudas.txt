@@ -1,5 +1,19 @@
-Se tienen que guardar tambien los valores en la tabla de simbolos? Como?
+1. Se tienen que guardar tambien los valores en la tabla de simbolos? Como?
     Entonces el no terminal constante tiene que tener tipo y valor ?
     O los valores que casan con cte y true / false, se solucionan con el analizador lexico?
     Alli, se pasa a int, para las constantes, y para los bool deberian fijarse a 0/1.
 
+2. en la declaracion del array:
+    porque se pone el numero de elemtnots a 0, si el numero de elemtnos es menor y
+    y el id no esta repetido, se insertara en la tds.
+
+    Ademas, da problema sintactico al poner numero negativos, a que se debe?
+
+    Habra que poner las comprobaciones if, else if en vez de if, if, porque si no puede
+        llegar al de la insercion cumplirlo e insertarlo a pesar de tener errores anteriores
+
+3. En la listaCampos recursiva,con que se rellena la referencia $.ref o refe? 
+    en caso de error T_ERROR?
+
+4. en que circunstancia podria devolvese T_ERROR en el campo telem cuando se busca obtTdA(ref),
+    en la estructura DIM?

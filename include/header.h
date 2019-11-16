@@ -26,11 +26,11 @@ extern void yyerror(const char * msg) ;   /* Tratamiento de errores          */
 
 extern int verbosidad;                   /* Flag si se desea una traza       */
 extern int numErrores;              /* Contador del numero de errores        */
-extern struct camposStruct {    /* Estructura para los campos de un registro */
+struct CamposStruct {    /* Estructura para los campos de un registro */
   int talla;
   int ref;
 }CAMPOSSTRUCT;
-extern struct cteStruct {                  /* Estructura para las constantes */
+struct CteStruct {                  /* Estructura para las constantes */
   int tipo;
   int cent;
 }CTESTRUCT;

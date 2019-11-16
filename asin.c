@@ -158,8 +158,8 @@ union YYSTYPE
   int   cent;                 /* Para el terminal "cte" entera              */
   char  *ident;               /* Nombre del identificador                   */
   int tipo;                   /* Tipo del simbolo                           */
-  struct camposStruct lisCampos;  
-  struct cteStruct  constanteStru;
+  struct CamposStruct lisCampos;  
+  struct CteStruct  constanteStru;
 
 #line 165 "asin.c" /* yacc.c:355  */
 };
@@ -479,14 +479,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    41,    41,    41,    49,    50,    54,    55,    60,    69,
-      82,    98,   109,   113,   121,   132,   147,   148,   149,   150,
-     151,   152,   156,   157,   161,   162,   166,   170,   174,   175,
-     179,   180,   181,   182,   186,   187,   191,   192,   196,   197,
-     201,   202,   206,   207,   211,   212,   213,   217,   218,   219,
-     220,   221,   222,   226,   231,   236,   244,   245,   246,   247,
-     248,   252,   253,   257,   258,   262,   263,   264,   265,   269,
-     270,   274,   275,   276,   280,   281,   282,   286,   287
+       0,    44,    44,    44,    52,    53,    57,    58,    63,    72,
+      84,   100,   111,   115,   123,   134,   148,   149,   150,   151,
+     152,   153,   157,   158,   162,   163,   167,   171,   175,   176,
+     180,   184,   197,   216,   238,   242,   254,   258,   262,   266,
+     270,   274,   278,   282,   286,   287,   288,   303,   304,   305,
+     306,   317,   318,   322,   327,   332,   340,   341,   342,   343,
+     344,   348,   349,   353,   354,   358,   359,   360,   361,   365,
+     366,   370,   371,   372,   376,   377,   378,   382,   383
 };
 #endif
 
@@ -1384,13 +1384,13 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 41 "src/asin.y" /* yacc.c:1646  */
-    { dvar=0; }
+#line 44 "src/asin.y" /* yacc.c:1646  */
+    { dvar = 0; }
 #line 1390 "asin.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 43 "src/asin.y" /* yacc.c:1646  */
+#line 46 "src/asin.y" /* yacc.c:1646  */
     {
       verTdS();
     }
@@ -1398,7 +1398,7 @@ yyreduce:
     break;
 
   case 8:
-#line 61 "src/asin.y" /* yacc.c:1646  */
+#line 64 "src/asin.y" /* yacc.c:1646  */
     {
         if (! insTdS((yyvsp[-1].ident), (yyvsp[-2].tipo), dvar, -1)) {
           yyerror("Identificador repetido");
@@ -1410,42 +1410,41 @@ yyreduce:
     break;
 
   case 9:
-#line 70 "src/asin.y" /* yacc.c:1646  */
+#line 73 "src/asin.y" /* yacc.c:1646  */
     {
-        /*cambiar lo del tipo ese $4.tipo*/
         if ((yyvsp[-4].tipo) != (yyvsp[-1].constanteStru).tipo) {
           yyerror("Tipos incompatibles");
         }
-        if (! insTdS((yyvsp[-3].ident), (yyvsp[-4].tipo), dvar, -1)) {
+        else if (! insTdS((yyvsp[-3].ident), (yyvsp[-4].tipo), dvar, -1)) {
           yyerror("Identificador repetido");
         } else {
           dvar += TALLA_TIPO_SIMPLE;
         }
       }
-#line 1426 "asin.c" /* yacc.c:1646  */
+#line 1425 "asin.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 83 "src/asin.y" /* yacc.c:1646  */
+#line 85 "src/asin.y" /* yacc.c:1646  */
     {
         int numelem = (yyvsp[-2].cent);
-        if ((yyvsp[-2].cent) <= 0) {
+        if (numelem <= 0) {
           yyerror("Talla negativa del array");
           numelem = 0;
+        } else  {
+          int refe = insTdA((yyvsp[-5].tipo), numelem);
+          if (! insTdS((yyvsp[-4].ident), T_ARRAY, dvar, refe)) {
+            yyerror("Identificador repetido");
+          } else {
+            dvar += numelem * TALLA_TIPO_SIMPLE;
+          }
         }
-        int refe = insTdA((yyvsp[-5].tipo), numelem);
-        if (! insTdS((yyvsp[-4].ident), T_ARRAY, dvar, refe)) {
-          yyerror("Identificador repetido");
-        } else {
-          dvar += numelem * TALLA_TIPO_SIMPLE;
-        }
-        
       }
-#line 1445 "asin.c" /* yacc.c:1646  */
+#line 1444 "asin.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 99 "src/asin.y" /* yacc.c:1646  */
+#line 101 "src/asin.y" /* yacc.c:1646  */
     {
         if (! insTdS((yyvsp[-1].ident), T_RECORD, dvar, (yyvsp[-3].lisCampos).ref)) {
           yyerror("Identificador repetido");
@@ -1453,27 +1452,27 @@ yyreduce:
           dvar += TALLA_TIPO_SIMPLE;
         }
       }
-#line 1457 "asin.c" /* yacc.c:1646  */
+#line 1456 "asin.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 110 "src/asin.y" /* yacc.c:1646  */
+#line 112 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.tipo) = T_ENTERO;
       }
-#line 1465 "asin.c" /* yacc.c:1646  */
+#line 1464 "asin.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 114 "src/asin.y" /* yacc.c:1646  */
+#line 116 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.tipo) = T_LOGICO;
       }
-#line 1473 "asin.c" /* yacc.c:1646  */
+#line 1472 "asin.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 122 "src/asin.y" /* yacc.c:1646  */
+#line 124 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.lisCampos).talla = 1;
         int refe = insTdR(-1, (yyvsp[-1].ident), (yyvsp[-2].tipo), dvar);
@@ -1484,54 +1483,208 @@ yyreduce:
           dvar += TALLA_TIPO_SIMPLE;
         }
       }
-#line 1488 "asin.c" /* yacc.c:1646  */
+#line 1487 "asin.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 133 "src/asin.y" /* yacc.c:1646  */
+#line 135 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.lisCampos).talla = (yyvsp[-3].lisCampos).talla + 1;
         int refe = insTdR((yyvsp[-3].lisCampos).ref, (yyvsp[-1].ident), (yyvsp[-2].tipo), dvar);
         if ( refe == -1) {
           yyerror("Identificador repetido");
         } else {
-          /*con que se rellena la referencia $.ref o refe? en caso de error T_ERROR?*/
           (yyval.lisCampos).ref = (yyvsp[-3].lisCampos).ref;
           dvar += TALLA_TIPO_SIMPLE;
         }
       }
-#line 1504 "asin.c" /* yacc.c:1646  */
+#line 1502 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 181 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1510 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 185 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      SIMB sim = obtTdS((yyvsp[-2].ident));
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (! ((sim.tipo == (yyvsp[0].tipo) == T_ENTERO) || (sim.tipo == (yyvsp[0].tipo) == T_LOGICO))) {
+        yyerror("Tipos incompatibles en la instruccion de asignacion");
+      } else {
+        (yyval.tipo) = sim.tipo;
+      }
+    }
+#line 1527 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 32:
+#line 198 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      SIMB sim = obtTdS((yyvsp[-5].ident));
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if ((yyvsp[-3].tipo) != T_ENTERO) {
+        yyerror("Incompatibilidad de tipo en el indice del array");
+      } else {
+        DIM dim = obtTdA(sim.ref);
+        if (dim.telem != (yyvsp[0].tipo)) {
+          yyerror("Incomptabilidad de tipo entre el array y la asignacion");
+        } else {
+          (yyval.tipo) = dim.telem;
+        }
+      }
+
+    }
+#line 1550 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 33:
+#line 217 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      SIMB sim = obtTdS((yyvsp[-4].ident));
+      CAMP cam;
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else {
+        cam = obtTdR(sim.ref, (yyvsp[-2].ident));
+        if (cam.tipo == T_ERROR) {
+          yyerror("No existe el campo del registro");
+        } else if (cam.tipo != (yyvsp[0].tipo)) {
+          yyerror("Incomptabilidad de tipos entre el campo del registro y la asignacion");
+        } else {
+          (yyval.tipo) = cam.tipo;
+        }
+      }
+    }
+#line 1573 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 239 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1581 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 243 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      if (! (((yyvsp[-2].tipo) == T_LOGICO) && ((yyvsp[0].tipo) == T_LOGICO))) {
+        yyerror("Los tipos del operador son incompatibles");
+      } else {
+        (yyval.tipo) = T_LOGICO;
+      }
+    }
+#line 1594 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 255 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1602 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 263 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1610 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 271 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1618 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 279 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = (yyvsp[0].tipo);
+    }
+#line 1626 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 289 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      SIMB sim = obtTdS((yyvsp[0].ident));
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_ENTERO) {
+        yyerror("Incomptabilidad de tipos");
+      } else {
+        (yyval.tipo) = T_ENTERO;
+      }
+    }
+#line 1642 "asin.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 307 "src/asin.y" /* yacc.c:1646  */
+    {
+      (yyval.tipo) = T_ERROR;
+      SIMB sim = obtTdS((yyvsp[0].ident));
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else {
+        (yyval.tipo) = sim.tipo;
+      }
+    }
+#line 1657 "asin.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 227 "src/asin.y" /* yacc.c:1646  */
+#line 323 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.constanteStru).tipo = T_ENTERO;
         (yyval.constanteStru).cent = (yyvsp[0].cent);
       }
-#line 1513 "asin.c" /* yacc.c:1646  */
+#line 1666 "asin.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 232 "src/asin.y" /* yacc.c:1646  */
+#line 328 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.constanteStru).tipo = T_LOGICO;
         (yyval.constanteStru).cent = TRUE;
       }
-#line 1522 "asin.c" /* yacc.c:1646  */
+#line 1675 "asin.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 237 "src/asin.y" /* yacc.c:1646  */
+#line 333 "src/asin.y" /* yacc.c:1646  */
     {
         (yyval.constanteStru).tipo = T_LOGICO;
         (yyval.constanteStru).cent = FALSE;
       }
-#line 1531 "asin.c" /* yacc.c:1646  */
+#line 1684 "asin.c" /* yacc.c:1646  */
     break;
 
 
-#line 1535 "asin.c" /* yacc.c:1646  */
+#line 1688 "asin.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1759,7 +1912,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 290 "src/asin.y" /* yacc.c:1906  */
+#line 386 "src/asin.y" /* yacc.c:1906  */
 
 /*****************************************************************************/
 

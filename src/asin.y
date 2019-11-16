@@ -14,8 +14,8 @@
   int   cent;                 /* Para el terminal "cte" entera              */
   char  *ident;               /* Nombre del identificador                   */
   int tipo;                   /* Tipo del simbolo                           */
-  struct camposStruct lisCampos;  
-  struct cteStruct  constanteStru;
+  struct CamposStruct lisCampos;  
+  struct CteStruct  constanteStru;
 }/***************************************************************************/
 
 %token MAS_ MENOS_ POR_ DIV_ MOD_
@@ -36,9 +36,12 @@ DELI_ PUNTO_
 %type<lisCampos> listaCampos
 %type<constanteStru> constante
 
+%type<tipo> expresion expresionAditiva expresionIgualdad expresionLogica expresionMultiplicativa
+  expresionRelacional expresionSufija expresionUnaria
+
 %%
 programa
-  : { dvar=0; } 
+  : { dvar = 0; } 
     ALLA_ secuenciaSentencias CLLA_
     {
       verTdS();
@@ -71,7 +74,7 @@ declaracion
         if ($1 != $4.tipo) {
           yyerror("Tipos incompatibles");
         }
-        if (! insTdS($2, $1, dvar, -1)) {
+        else if (! insTdS($2, $1, dvar, -1)) {
           yyerror("Identificador repetido");
         } else {
           dvar += TALLA_TIPO_SIMPLE;
@@ -81,17 +84,17 @@ declaracion
   | tipoSimple ID_ ACOR_ CTE_ CCOR_ DELI_
       {
         int numelem = $4;
-        if ($4 <= 0) {
+        if (numelem <= 0) {
           yyerror("Talla negativa del array");
           numelem = 0;
+        } else  {
+          int refe = insTdA($1, numelem);
+          if (! insTdS($2, T_ARRAY, dvar, refe)) {
+            yyerror("Identificador repetido");
+          } else {
+            dvar += numelem * TALLA_TIPO_SIMPLE;
+          }
         }
-        int refe = insTdA($1, numelem);
-        if (! insTdS($2, T_ARRAY, dvar, refe)) {
-          yyerror("Identificador repetido");
-        } else {
-          dvar += numelem * TALLA_TIPO_SIMPLE;
-        }
-        
       }
     //declaracion de una estructura
   | STRUCT_ ALLA_ listaCampos CLLA_ ID_ DELI_
@@ -135,7 +138,6 @@ listaCampos
         if ( refe == -1) {
           yyerror("Identificador repetido");
         } else {
-          /*con que se rellena la referencia $.ref o refe? en caso de error T_ERROR?*/
           $$.ref = $1.ref;
           dvar += TALLA_TIPO_SIMPLE;
         }
@@ -176,33 +178,107 @@ instruccionExpresion
 
 expresion
   : expresionLogica
+    {
+      $$ = $1;
+    }
   | ID_ operadorAsignacion expresion
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (! ((sim.tipo == $3 == T_ENTERO) || (sim.tipo == $3 == T_LOGICO))) {
+        yyerror("Tipos incompatibles en la instruccion de asignacion");
+      } else {
+        $$ = sim.tipo;
+      }
+    }
   | ID_ ACOR_ expresion CCOR_ operadorAsignacion expresion
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if ($3 != T_ENTERO) {
+        yyerror("Incompatibilidad de tipo en el indice del array");
+      } else {
+        DIM dim = obtTdA(sim.ref);
+        if (dim.telem != $6) {
+          yyerror("Incomptabilidad de tipo entre el array y la asignacion");
+        } else {
+          $$ = dim.telem;
+        }
+      }
+
+    }
   | ID_ PUNTO_ ID_ operadorAsignacion expresion
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+      CAMP cam;
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else {
+        cam = obtTdR(sim.ref, $3);
+        if (cam.tipo == T_ERROR) {
+          yyerror("No existe el campo del registro");
+        } else if (cam.tipo != $5) {
+          yyerror("Incomptabilidad de tipos entre el campo del registro y la asignacion");
+        } else {
+          $$ = cam.tipo;
+        }
+      }
+    }
   ;
 
 expresionLogica
   : expresionIgualdad
+    {
+      $$ = $1;
+    }
   | expresionLogica operadorLogico expresionIgualdad
+    {
+      $$ = T_ERROR;
+      if (! (($1 == T_LOGICO) && ($3 == T_LOGICO))) {
+        yyerror("Los tipos del operador son incompatibles");
+      } else {
+        $$ = T_LOGICO;
+      }
+    }
   ;
 
 expresionIgualdad
   : expresionRelacional
+    {
+      $$ = $1;
+    }
   | expresionIgualdad operadorIgualdad expresionRelacional
   ;
 
 expresionRelacional
   : expresionAditiva
+    {
+      $$ = $1;
+    }
   | expresionRelacional operadorRelacional expresionAditiva
   ;
 
 expresionAditiva
   : expresionMultiplicativa
+    {
+      $$ = $1;
+    }
   | expresionAditiva operadorAditivo expresionMultiplicativa
   ;
 
 expresionMultiplicativa
   : expresionUnaria
+    {
+      $$ = $1;
+    }
   | expresionMultiplicativa operadorMultiplicativo expresionUnaria
   ;
 
@@ -210,6 +286,17 @@ expresionUnaria
   : expresionSufija
   | operadorUnario expresionUnaria
   | operadorIncremento ID_
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($2);
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_ENTERO) {
+        yyerror("Incomptabilidad de tipos");
+      } else {
+        $$ = T_ENTERO;
+      }
+    }
   ;
 
 expresionSufija
@@ -217,6 +304,16 @@ expresionSufija
   | ID_ operadorIncremento
   | ID_ ACOR_ expresion CCOR_
   | ID_
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else {
+        $$ = sim.tipo;
+      }
+    }
   | ID_ PUNTO_ ID_
   | constante
   ;
