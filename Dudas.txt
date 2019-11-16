@@ -1,0 +1,5 @@
+Se tienen que guardar tambien los valores en la tabla de simbolos? Como?
+    Entonces el no terminal constante tiene que tener tipo y valor ?
+    O los valores que casan con cte y true / false, se solucionan con el analizador lexico?
+    Alli, se pasa a int, para las constantes, y para los bool deberian fijarse a 0/1.
+

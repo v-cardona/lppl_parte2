@@ -10,6 +10,10 @@
 #define TRUE  1
 #define FALSE 0
 #define TALLA_TIPO_SIMPLE 1
+/************************ Variables externas definidas en Programa Principal */
+extern int verTDS;                       /* Flag para saber si mostrar la TDS*/
+/***************************** Variables externas definidas en las librerıas */
+extern int dvar;               /* Desplazamiento en el Segmento de Variables */
 /************************************* Variables externas definidas en el AL */
 extern int yylex();
 extern int yyparse();
@@ -30,9 +34,5 @@ extern struct cteStruct {                  /* Estructura para las constantes */
   int tipo;
   int cent;
 }CTESTRUCT;
-/************************ Variables externas definidas en Programa Principal */
-extern int verTDS;                       /* Flag para saber si mostrar la TDS*/
-/***************************** Variables externas definidas en las librerıas */
-extern int dvar;               /* Desplazamiento en el Segmento de Variables */
 #endif  /* _HEADER_H */
 /*****************************************************************************/

@@ -40,6 +40,9 @@ DELI_ PUNTO_
 programa
   : { dvar=0; } 
     ALLA_ secuenciaSentencias CLLA_
+    {
+      verTdS();
+    }
   ;
 
 secuenciaSentencias
@@ -65,7 +68,6 @@ declaracion
     //declaracion y asignacion de un tipo simple
   | tipoSimple ID_ ASIG_ constante DELI_ 
       {
-        /*cambiar lo del tipo ese $4.tipo*/
         if ($1 != $4.tipo) {
           yyerror("Tipos incompatibles");
         }
@@ -95,7 +97,7 @@ declaracion
   | STRUCT_ ALLA_ listaCampos CLLA_ ID_ DELI_
       {
         if (! insTdS($5, T_RECORD, dvar, $3.ref)) {
-          yyerror("Identificador repeetido");
+          yyerror("Identificador repetido");
         } else {
           dvar += TALLA_TIPO_SIMPLE;
         }
