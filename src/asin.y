@@ -38,7 +38,7 @@ DELI_ PUNTO_
 
 %type<tipo> expresion expresionAditiva expresionIgualdad expresionLogica expresionMultiplicativa
   expresionRelacional expresionSufija expresionUnaria
-
+%type<tipo> operadorUnario
 %%
 programa
   : { dvar = 0; } 
@@ -203,6 +203,8 @@ expresion
         yyerror("Objeto no declarado");
       } else if ($3 != T_ENTERO) {
         yyerror("Incompatibilidad de tipo en el indice del array");
+      } else if (sim.tipo != T_ARRAY) {
+        yyerror("El objeto no es de tipo array");
       } else {
         DIM dim = obtTdA(sim.ref);
         if (dim.telem != $6) {
@@ -211,7 +213,6 @@ expresion
           $$ = dim.telem;
         }
       }
-
     }
   | ID_ PUNTO_ ID_ operadorAsignacion expresion
     {
@@ -221,6 +222,8 @@ expresion
 
       if (sim.tipo == T_ERROR) {
         yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_RECORD) {
+        yyerror("El objeto no es de tipo registro");
       } else {
         cam = obtTdR(sim.ref, $3);
         if (cam.tipo == T_ERROR) {
@@ -243,7 +246,7 @@ expresionLogica
     {
       $$ = T_ERROR;
       if (! (($1 == T_LOGICO) && ($3 == T_LOGICO))) {
-        yyerror("Los tipos del operador son incompatibles");
+        yyerror("Los tipos del operador logico son incompatibles, deben ser logicos");
       } else {
         $$ = T_LOGICO;
       }
@@ -256,6 +259,15 @@ expresionIgualdad
       $$ = $1;
     }
   | expresionIgualdad operadorIgualdad expresionRelacional
+    {
+      $$ = T_ERROR;
+
+      if ($1 != $3) {
+        yyerror("Los tipos del operador de igualdad son incompatibles");
+      } else {
+        $$ = $1;
+      }
+    }
   ;
 
 expresionRelacional
@@ -264,6 +276,15 @@ expresionRelacional
       $$ = $1;
     }
   | expresionRelacional operadorRelacional expresionAditiva
+    {
+      $$ = T_ERROR;
+
+      if (! (($1 == T_ENTERO) && ($3 == T_ENTERO))) {
+        yyerror("Los tipos del operador relacional son incompatibles, deben ser enteros");
+      } else {
+        $$ = T_LOGICO;
+      }
+    }
   ;
 
 expresionAditiva
@@ -272,6 +293,15 @@ expresionAditiva
       $$ = $1;
     }
   | expresionAditiva operadorAditivo expresionMultiplicativa
+    {
+      $$ = T_ERROR;
+
+      if (! ($1 == $3 == T_ENTERO)) {
+        yyerror("Los tipos del operador aditivo son incompatibles, deben ser enteros");
+      } else {
+        $$ = T_ENTERO;
+      }
+    }
   ;
 
 expresionMultiplicativa
@@ -280,11 +310,32 @@ expresionMultiplicativa
       $$ = $1;
     }
   | expresionMultiplicativa operadorMultiplicativo expresionUnaria
+    {
+      $$ = T_ERROR;
+
+      if (! ($1 == $3 == T_ENTERO)) {
+        yyerror("Los tipos del operador multiplicativo son incompatibles, deben ser enteros");
+      } else {
+        $$ = T_ENTERO;
+      }
+    }
   ;
 
 expresionUnaria
   : expresionSufija
+    {
+      $$ = $1;
+    }
   | operadorUnario expresionUnaria
+    {
+      $$ = T_ERROR;
+
+      if ($1 != $2) {
+        yyerror("El tipo del operador unario no es compatible");
+      } else {
+        $$ = $1;
+      }
+    }
   | operadorIncremento ID_
     {
       $$ = T_ERROR;
@@ -292,7 +343,7 @@ expresionUnaria
       if (sim.tipo == T_ERROR) {
         yyerror("Objeto no declarado");
       } else if (sim.tipo != T_ENTERO) {
-        yyerror("Incomptabilidad de tipos");
+        yyerror("Incomptabilidad de tipos, debe ser entero");
       } else {
         $$ = T_ENTERO;
       }
@@ -301,8 +352,37 @@ expresionUnaria
 
 expresionSufija
   : APAR_ expresion CPAR_
+    {
+      $$ = $2;
+    }
   | ID_ operadorIncremento
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_ENTERO) {
+        yyerror("Incomptabilidad de tipos, debe ser entero");
+      } else {
+        $$ = T_ENTERO;
+      }
+    }
   | ID_ ACOR_ expresion CCOR_
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if ($3 != T_ENTERO) {
+        yyerror("Incompatibilidad de tipo en el indice del array");
+      } else if (sim.tipo != T_ARRAY) {
+        yyerror("El objeto no es de tipo array");
+      } else {
+        DIM dim = obtTdA(sim.ref);
+        $$ = dim.telem;
+      }
+    }
   | ID_
     {
       $$ = T_ERROR;
@@ -315,7 +395,28 @@ expresionSufija
       }
     }
   | ID_ PUNTO_ ID_
+    {
+      $$ = T_ERROR;
+      SIMB sim = obtTdS($1);
+      CAMP cam;
+
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_RECORD) {
+        yyerror("El objeto no es de tipo registro");
+      } else {
+        cam = obtTdR(sim.ref, $3);
+        if (cam.tipo == T_ERROR) {
+          yyerror("No existe el campo del registro");
+        } else {
+          $$ = cam.tipo;
+        }
+      }
+    }
   | constante
+    {
+      $$ = $1.tipo;
+    }
   ;
 
 constante
@@ -374,8 +475,17 @@ operadorMultiplicativo
 
 operadorUnario
   : MAS_
+    {
+      $$ = T_ENTERO;
+    }
   | MEN_
+    {
+      $$ = T_ENTERO;
+    }
   | NOT_
+    {
+      $$ = T_LOGICO;
+    }
   ;
 
 operadorIncremento

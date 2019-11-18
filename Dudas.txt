@@ -17,3 +17,17 @@
 
 4. en que circunstancia podria devolvese T_ERROR en el campo telem cuando se busca obtTdA(ref),
     en la estructura DIM?
+
+5. en el no terminal constantes, tiene sentido guardarse el valor?
+    para que si no se va a guarar?
+
+6. En las expresiones se calcula el valor obtenido, y se tendra que insertar en
+    la tds el nuevo valor asociado a la variable. ?
+    para los arrays se necesitara el valor para comprobar que se encuentra entre los limites.
+
+7. Los tipos bool pueden sumarse, restarse, dividirse,...
+
+8. Negar variables o numeros negativos da error sintactico(-var, -5)
+
+9. Se tiene que comprobar que el indice del array esta dentro?
+
