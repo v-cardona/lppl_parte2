@@ -11,4 +11,8 @@
   } str;
   str.bs = true;
   e = b[4];
+  int r;
+  int t;
+  read(t);
+  print(str.as);
 }

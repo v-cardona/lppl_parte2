@@ -160,15 +160,38 @@ listaInstrucciones
 
 instruccionEntradaSalida
   : READ_ APAR_ ID_ CPAR_ DELI_
+    {
+      SIMB sim = obtTdS($3);
+      if (sim.tipo == T_ERROR) {
+        yyerror("Objeto no declarado");
+      } else if (sim.tipo != T_ENTERO) {
+        yyerror("El argumento del read debe ser entero");
+      }
+    }
   | PRINT_ APAR_ expresion CPAR_ DELI_
+    {
+      if ($3 != T_ENTERO) {
+        yyerror("El argumento del print debe ser entero");
+      }
+    }
   ;
 
 instruccionSeleccion
   : IF_ APAR_ expresion CPAR_ instruccion ELSE_ instruccion
+    {
+      if ($3 != T_LOGICO) {
+        yyerror("La condicion debe ser de tipo logica");
+      }
+    }
   ;
 
 instruccionIteracion
   : WHILE_ APAR_ expresion CPAR_ instruccion
+    {
+      if ($3 != T_LOGICO) {
+        yyerror("La condicion deber ser de tipo logica");
+      }
+    }
   ;
 
 instruccionExpresion
@@ -265,7 +288,7 @@ expresionIgualdad
       if ($1 != $3) {
         yyerror("Los tipos del operador de igualdad son incompatibles");
       } else {
-        $$ = $1;
+        $$ = T_LOGICO;
       }
     }
   ;

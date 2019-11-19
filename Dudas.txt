@@ -31,3 +31,10 @@
 
 9. Se tiene que comprobar que el indice del array esta dentro?
 
+10. En la instruccion if/while, cuando se produce un error porque no es tipo logico, te indica la ultima 
+    linea, donde acaba el if/while completo.
+
+11. Las instrucciones print/read deben ser unicamente de tipo entera? por que?
+
+12. b02.c tenemos mas errores. Hay que señalar solo el primero de las expresiones o todos los 
+    posibles errores?
