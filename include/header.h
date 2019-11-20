@@ -10,6 +10,7 @@
 #define TRUE  1
 #define FALSE 0
 #define TALLA_TIPO_SIMPLE 1
+#define T_ASIG 6
 /************************ Variables externas definidas en Programa Principal */
 extern int verTDS;                       /* Flag para saber si mostrar la TDS*/
 /***************************** Variables externas definidas en las librerıas */
@@ -30,9 +31,5 @@ struct CamposStruct {    /* Estructura para los campos de un registro */
   int talla;
   int ref;
 }CAMPOSSTRUCT;
-struct CteStruct {                  /* Estructura para las constantes */
-  int tipo;
-  int cent;
-}CTESTRUCT;
 #endif  /* _HEADER_H */
 /*****************************************************************************/

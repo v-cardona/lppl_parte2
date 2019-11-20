@@ -100,9 +100,8 @@ union YYSTYPE
   char  *ident;               /* Nombre del identificador                   */
   int tipo;                   /* Tipo del simbolo                           */
   struct CamposStruct lisCampos;  
-  struct CteStruct  constanteStru;
 
-#line 106 "asin.h" /* yacc.c:1909  */
+#line 105 "asin.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
