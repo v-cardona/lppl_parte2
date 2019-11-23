@@ -14,7 +14,7 @@
   int   cent;                 /* Para el terminal "cte" entera              */
   char  *ident;               /* Nombre del identificador                   */
   int tipo;                   /* Tipo del simbolo                           */
-  struct CamposStruct lisCampos;  
+  struct CamposStruct lisCampos;  /* Estructura para los campos del registro*/
 }/***************************************************************************/
 
 %token MAS_ MENOS_ POR_ DIV_ MOD_
@@ -129,7 +129,7 @@ listaCampos
         $$.ref = $1.ref;
         int refe = insTdR($1.ref, $3, $2, $1.talla);
         if ( refe == -1) {
-          yyerror("Identificador repetido");
+          yyerror("Campo repetido");
         } else{
           $$.talla = $1.talla + TALLA_TIPO_SIMPLE;
         }
@@ -172,7 +172,7 @@ instruccionSeleccion
   : IF_ APAR_ expresion CPAR_ instruccion ELSE_ instruccion
     {
       if ($3 != T_LOGICO && $3 != T_ERROR) {
-        yyerror("La condicion debe ser de tipo logica");
+        yyerror("La condicion del if debe ser logica");
       }
     }
   ;
@@ -181,7 +181,7 @@ instruccionIteracion
   : WHILE_ APAR_ expresion 
     {
       if ($3 != T_LOGICO && $3 != T_ERROR) {
-        yyerror("La condicion deber ser de tipo logica");
+        yyerror("La condicion del while deber ser logica");
       }
     }
     CPAR_ instruccion
@@ -207,7 +207,7 @@ expresion
         yyerror("Objeto no declarado");
       } else if (! ((sim.tipo == $3 == T_ENTERO) || (sim.tipo == $3 == T_LOGICO))) {
         if ($3 != T_ERROR) {
-          yyerror("Tipos incompatibles en la instruccion de asignacion");
+          yyerror("Tipos incompatibles en la asignacion");
         }
       } else if ($3 == T_LOGICO && $2 != T_ASIG) {
         yyerror("Operador no compatible con el tipo logico");
