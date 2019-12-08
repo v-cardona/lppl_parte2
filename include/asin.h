@@ -99,7 +99,7 @@ union YYSTYPE
   int   cent;                 /* Para el terminal "cte" entera              */
   char  *ident;               /* Nombre del identificador                   */
   int tipo;                   /* Tipo del simbolo                           */
-  struct CamposStruct lisCampos;  
+  struct CamposStruct lisCampos;  /* Estructura para los campos del registro*/
 
 #line 105 "asin.h" /* yacc.c:1909  */
 };

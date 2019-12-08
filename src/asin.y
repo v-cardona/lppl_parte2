@@ -234,8 +234,10 @@ expresion
           if ($6 != T_ERROR) {
             yyerror("Incomptabilidad de tipo entre el array y la asignacion");
           }
+        } else if ($6 == T_LOGICO && $5 != T_ASIG) {
+            yyerror("Operador no compatible con el tipo logico");
         } else {
-          $$ = dim.telem;
+            $$ = dim.telem;
         }
       }
     }
@@ -257,6 +259,8 @@ expresion
           if ($5 != T_ERROR) {
             yyerror("Incomptabilidad de tipos entre el campo del registro y la asignacion");
           }
+        } else if (cam.tipo == T_LOGICO && $4 != T_ASIG) {
+            yyerror("Operador no compatible con el tipo logico");
         } else {
           $$ = cam.tipo;
         }
